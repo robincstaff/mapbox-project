@@ -39,6 +39,9 @@ ehthumbs_vista.db
 # Folder config file
 [Dd]esktop.ini
 
+#Location history folder
+src/LocationHistory
+
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
