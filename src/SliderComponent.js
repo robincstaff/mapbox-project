@@ -12,15 +12,22 @@ const selectedEnd = getTodayAtSpecificHour(14)
 const startTime = new Date(1551452343128);
 const endTime = new Date(1556651554999);
 
-class Slider extends React.Component {  
-  state = {  
-    error: false,  
-    selectedInterval: [selectedStart, selectedEnd],  
-  }
+class Slider extends React.Component { 
+    constructor(props){ 
+        super(props)
+        this.state = {  
+            error: false,  
+            selectedInterval: [selectedStart, selectedEnd],  
+        }
+}
 	
   errorHandler = ({ error }) => this.setState({ error })  
 
-  onChangeCallback = selectedInterval => this.setState({ selectedInterval })  
+  onChangeCallback = (selectedInterval) => {
+      this.setState({ selectedInterval })
+      this.props.markerUpdate(selectedInterval);
+  }
+
 
   render() {  
     const { selectedInterval, error } = this.state  

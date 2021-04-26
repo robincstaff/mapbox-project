@@ -4,7 +4,6 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
 import mapboxGlCsp from 'mapbox-gl/dist/mapbox-gl-csp';
-
 import data from './LocationHistory/SemanticLocationHistory/2019/2019_MARCH.json';
 import data2 from './LocationHistory/SemanticLocationHistory/2019/2019_APRIL.json';
 import Slider from './SliderComponent';
@@ -20,10 +19,10 @@ class Mapbox extends React.PureComponent {
       lat: 63.409388,
       zoom: 11
     }
+    this.updateMarkers = this.updateMarkers.bind(this)
+    this.activeMarkers = []
     this.mapContainer = React.createRef();
-
     this.locationData = data;
-    
     data2.timelineObjects.forEach((o) => {
       this.locationData.timelineObjects.push(o)
     });
@@ -31,35 +30,57 @@ class Mapbox extends React.PureComponent {
 
   componentDidMount() {
     const { lng, lat, zoom } = this.state;
-    const map = new mapboxgl.Map({
+    this.map = new mapboxgl.Map({
       container: this.mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [lng, lat],
       zoom: zoom
     });
 
-    map.on('move', () => {
+    this.map.on('move', () => {
       this.setState({
-        lng: map.getCenter().lng.toFixed(4),
-        lat: map.getCenter().lat.toFixed(4),
-        zoom: map.getZoom().toFixed(2)
+        lng: this.map.getCenter().lng.toFixed(4),
+        lat: this.map.getCenter().lat.toFixed(4),
+        zoom: this.map.getZoom().toFixed(2)
       });
     });
     let marker = new mapboxgl.Marker()
     .setLngLat([10.40316447660307, 63.44198412217757])
-    .addTo(map);
-    this.addMarkers(map);
+    .addTo(this.map);
+    this.addMarkers();
   }
 
-  addMarkers(map) {
+  addMarkers() {
       this.locationData.timelineObjects.forEach((location) => {
         if(location.placeVisit) {
-          new mapboxgl.Marker()
+          const marker = new mapboxgl.Marker()
           .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-          .addTo(map)
+          .addTo(this.map)
+          this.activeMarkers.push(marker);
         }
         //Handle activity segments for future work
       });
+  }
+
+  withinInterval(selectedInterval, timestamp){
+  //  if((selectedInterval[0].getTime() < timestamp) && (timestamp > selectedInterval[1].getTime())){
+  //    return true;
+  //  }
+  return false;
+  }
+
+  updateMarkers(selectedInterval){
+    this.activeMarkers.forEach((marker) => marker.remove());
+    this.locationData.timelineObjects.forEach((location) => {
+      if(location.placeVisit) {
+        if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
+          const marker = new mapboxgl.Marker()
+          .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
+          .addTo(this.map)
+          this.activeMarkers.push(marker);
+        }
+      }
+    });
   }
 
   convertCoordinates(coordinate) {
@@ -74,7 +95,7 @@ class Mapbox extends React.PureComponent {
       <div>
         <div className="sidebar">
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-          <Slider/>
+          <Slider markerUpdate={this.updateMarkers}/>
         </div>
         <div ref={this.mapContainer} className="map-container" />
       </div>
