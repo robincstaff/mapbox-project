@@ -10,6 +10,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "react-timeline-range-slider": "^1.4.1",
+    "takeout-to-geojson": "0.0.5",
     "web-vitals": "^1.1.1",
     "worker-loader": "^3.0.8"
   },

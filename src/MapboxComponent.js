@@ -4,7 +4,10 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
 import mapboxGlCsp from 'mapbox-gl/dist/mapbox-gl-csp';
-import data from './LocationHistory/SemanticLocationHistory/2021/2021_MARCH.json';
+
+import data from './LocationHistory/SemanticLocationHistory/2019/2019_MARCH.json';
+import data2 from './LocationHistory/SemanticLocationHistory/2019/2019_APRIL.json';
+import Slider from './SliderComponent';
 
 mapboxgl.workerClass = MapboxWorker;
 mapboxgl.accessToken = 'pk.eyJ1Ijoicm9iaW5jcyIsImEiOiJja25tNWdtbGcwb3p5MnNuMHlqaTN0emQxIn0.NnfO1gt2sCMYDF_Mag8q6g';
@@ -18,7 +21,12 @@ class Mapbox extends React.PureComponent {
       zoom: 11
     }
     this.mapContainer = React.createRef();
+
     this.locationData = data;
+    
+    data2.timelineObjects.forEach((o) => {
+      this.locationData.timelineObjects.push(o)
+    });
   }
 
   componentDidMount() {
@@ -56,7 +64,7 @@ class Mapbox extends React.PureComponent {
 
   convertCoordinates(coordinate) {
     let stringCor = String(coordinate);
-    let converted = parseFloat(stringCor.substring(0, 2).concat(".", stringCor.substring(2)));
+    let converted = parseFloat(stringCor.substring(0, stringCor.length - 7).concat(".", stringCor.substring(stringCor.length - 7)));
     return converted;
   }
 
@@ -66,6 +74,7 @@ class Mapbox extends React.PureComponent {
       <div>
         <div className="sidebar">
           Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+          <Slider/>
         </div>
         <div ref={this.mapContainer} className="map-container" />
       </div>
