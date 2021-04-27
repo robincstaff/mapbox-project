@@ -53,19 +53,16 @@ class Mapbox extends React.PureComponent {
 
   addMarkers() {
       this.locationData.timelineObjects.forEach((location) => {
-        if(location.placeVisit) {
           const marker = new mapboxgl.Marker()
           .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
           .addTo(this.map)
           this.activeMarkers.push(marker);
-        }
         //Handle activity segments for future work
       });
   }
 
   withinInterval(selectedInterval, timestamp){
-    // console.log(selectedInterval)
-   if((selectedInterval[0].getTime() < timestamp) && (timestamp > selectedInterval[1].getTime())){
+   if((selectedInterval[0].getTime() < timestamp) && (timestamp < selectedInterval[1].getTime())){
      return true;
    }
   return false;
@@ -79,24 +76,16 @@ class Mapbox extends React.PureComponent {
   }
   
   updateMarkers(selectedInterval){
-    // this.activeMarkers.forEach((marker) => marker.remove());
-    // const placeVisits = this.locationData.timelineObjects.filter(this.validPlacevisit());
-    // placeVisits.forEach((location) => {
-    //   if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
-    //     const marker = new mapboxgl.Marker()
-    //     .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-    //     .addTo(this.map)
-    //     this.activeMarkers.push(marker);
-    //   }
-    //   })
-
+    if(this.map == null) {
+      return
+    }
+    this.activeMarkers.forEach((marker) => marker.remove());
     this.locationData.timelineObjects.forEach((location) => {
         if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
           const marker = new mapboxgl.Marker()
           .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
           .addTo(this.map)
           this.activeMarkers.push(marker);
-          console.log(this)
         }
     });
   }

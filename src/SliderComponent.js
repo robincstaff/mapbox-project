@@ -6,11 +6,11 @@ const now = new Date()
 const getTodayAtSpecificHour = (hour = 12) =>
 	set(now, { hours: hour, minutes: 0, seconds: 0, milliseconds: 0 })
 
-const selectedStart = getTodayAtSpecificHour()
-const selectedEnd = getTodayAtSpecificHour(14)
-
 const startTime = new Date(1551452343128);
 const endTime = new Date(1556651554999);
+
+const selectedStart = startTime;
+const selectedEnd = endTime;
 
 class Slider extends React.Component { 
     constructor(props){ 
