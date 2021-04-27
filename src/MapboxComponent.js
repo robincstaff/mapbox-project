@@ -26,6 +26,7 @@ class Mapbox extends React.PureComponent {
     data2.timelineObjects.forEach((o) => {
       this.locationData.timelineObjects.push(o)
     });
+    this.locationData.timelineObjects = this.locationData.timelineObjects.filter(this.validPlacevisit)
   }
 
   componentDidMount() {
@@ -63,23 +64,40 @@ class Mapbox extends React.PureComponent {
   }
 
   withinInterval(selectedInterval, timestamp){
-  //  if((selectedInterval[0].getTime() < timestamp) && (timestamp > selectedInterval[1].getTime())){
-  //    return true;
-  //  }
+    // console.log(selectedInterval)
+   if((selectedInterval[0].getTime() < timestamp) && (timestamp > selectedInterval[1].getTime())){
+     return true;
+   }
   return false;
   }
 
+  validPlacevisit(location){
+    if(location.placeVisit){
+        return true;
+    }    
+    return false;
+  }
+  
   updateMarkers(selectedInterval){
-    this.activeMarkers.forEach((marker) => marker.remove());
+    // this.activeMarkers.forEach((marker) => marker.remove());
+    // const placeVisits = this.locationData.timelineObjects.filter(this.validPlacevisit());
+    // placeVisits.forEach((location) => {
+    //   if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
+    //     const marker = new mapboxgl.Marker()
+    //     .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
+    //     .addTo(this.map)
+    //     this.activeMarkers.push(marker);
+    //   }
+    //   })
+
     this.locationData.timelineObjects.forEach((location) => {
-      if(location.placeVisit) {
         if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
           const marker = new mapboxgl.Marker()
           .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
           .addTo(this.map)
           this.activeMarkers.push(marker);
+          console.log(this)
         }
-      }
     });
   }
 
