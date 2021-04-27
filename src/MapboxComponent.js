@@ -26,7 +26,7 @@ class Mapbox extends React.PureComponent {
     data2.timelineObjects.forEach((o) => {
       this.locationData.timelineObjects.push(o)
     });
-    this.locationData.timelineObjects = this.locationData.timelineObjects.filter(this.validPlacevisit)
+    this.locationData.timelineObjects = this.locationData.timelineObjects.filter(this.isPlaceVisit)
   }
 
   componentDidMount() {
@@ -66,13 +66,10 @@ class Mapbox extends React.PureComponent {
   }
 
   withinInterval(selectedInterval, timestamp){
-   if((selectedInterval[0].getTime() < timestamp) && (timestamp < selectedInterval[1].getTime())){
-     return true;
-   }
-  return false;
+   return (selectedInterval[0].getTime() < timestamp) && (timestamp < selectedInterval[1].getTime())
   }
 
-  validPlacevisit(location){
+  isPlaceVisit(location){
     if(location.placeVisit){
         return true;
     }    
