@@ -26,6 +26,7 @@ class Mapbox extends React.PureComponent {
     data2.timelineObjects.forEach((o) => {
       this.locationData.timelineObjects.push(o)
     });
+    this.locationData.timelineObjects = this.locationData.timelineObjects.filter(this.validPlacevisit)
   }
 
   componentDidMount() {
@@ -50,36 +51,44 @@ class Mapbox extends React.PureComponent {
     this.addMarkers();
   }
 
+  createMarker(location){
+    return new mapboxgl.Marker()
+    .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
+    .addTo(this.map)
+  }
+
   addMarkers() {
       this.locationData.timelineObjects.forEach((location) => {
-        if(location.placeVisit) {
-          const marker = new mapboxgl.Marker()
-          .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-          .addTo(this.map)
+          const marker = this.createMarker(location);
           this.activeMarkers.push(marker);
-        }
         //Handle activity segments for future work
       });
   }
 
   withinInterval(selectedInterval, timestamp){
-  //  if((selectedInterval[0].getTime() < timestamp) && (timestamp > selectedInterval[1].getTime())){
-  //    return true;
-  //  }
+   if((selectedInterval[0].getTime() < timestamp) && (timestamp < selectedInterval[1].getTime())){
+     return true;
+   }
   return false;
   }
 
+  validPlacevisit(location){
+    if(location.placeVisit){
+        return true;
+    }    
+    return false;
+  }
+  
   updateMarkers(selectedInterval){
+    if(this.map == null) {
+      return
+    }
     this.activeMarkers.forEach((marker) => marker.remove());
     this.locationData.timelineObjects.forEach((location) => {
-      if(location.placeVisit) {
         if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
-          const marker = new mapboxgl.Marker()
-          .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-          .addTo(this.map)
+          const marker = this.createMarker(location);
           this.activeMarkers.push(marker);
         }
-      }
     });
   }
 
