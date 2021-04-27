@@ -51,11 +51,15 @@ class Mapbox extends React.PureComponent {
     this.addMarkers();
   }
 
+  createMarker(location){
+    return new mapboxgl.Marker()
+    .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
+    .addTo(this.map)
+  }
+
   addMarkers() {
       this.locationData.timelineObjects.forEach((location) => {
-          const marker = new mapboxgl.Marker()
-          .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-          .addTo(this.map)
+          const marker = this.createMarker(location);
           this.activeMarkers.push(marker);
         //Handle activity segments for future work
       });
@@ -82,9 +86,7 @@ class Mapbox extends React.PureComponent {
     this.activeMarkers.forEach((marker) => marker.remove());
     this.locationData.timelineObjects.forEach((location) => {
         if(this.withinInterval(selectedInterval, location.placeVisit.duration.startTimestampMs)){
-          const marker = new mapboxgl.Marker()
-          .setLngLat([this.convertCoordinates(location.placeVisit.location.longitudeE7), this.convertCoordinates(location.placeVisit.location.latitudeE7)])
-          .addTo(this.map)
+          const marker = this.createMarker(location);
           this.activeMarkers.push(marker);
         }
     });
